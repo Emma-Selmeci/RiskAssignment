@@ -9,15 +9,17 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class ClientApplication extends Application {
-    ClientManager manager;
+    final ClientManager manager = new ClientManager();
     private ConnectionScreen connectionScreen;
 
     void initiateConnection(String host) {
         new Thread(new ClientConnector(host,this, manager)).start(); //Will simply return in case of a fail
     }
 
-    void setLabel(final String text) {
-        connectionScreen.setText(text);
+    void ready() {
+        synchronized(manager) {
+            manager.ready();
+        }
     }
 
     void connectionFailed() {
@@ -25,12 +27,15 @@ public class ClientApplication extends Application {
     }
 
     void connectionSuccesful() {
-        connectionScreen.setText("Connection established with server");
+        connectionScreen.connectionEstablished();
+    }
+
+    void setNumPlayers(int i) {
+        connectionScreen.setNumPlayers(i);
     }
 
     @Override
     public void start(Stage stage) throws IOException {
-        manager = new ClientManager();
         connectionScreen = new ConnectionScreen(this);
 
         Group activePanel = new Group(connectionScreen);

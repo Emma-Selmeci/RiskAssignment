@@ -1,6 +1,7 @@
 package riskClient;
 
 import javafx.application.Platform;
+import riskShared.GameState;
 
 import java.io.BufferedReader;
 import java.io.PrintWriter;
@@ -8,11 +9,21 @@ import java.io.PrintWriter;
 public class ClientManager {
     private ClientApplication app;
     private PrintWriter serverOutput;
+    private int id = -1;
+    private GameState state = GameState.INITIALIZATION;
+
     /**
      * Constructor creates an empty ClientManager object - used to avoid caching during initialization
      */
-    ClientManager() {
+    ClientManager() {}
 
+    private void send(String line) {
+        serverOutput.print(line + "\r\n");
+        serverOutput.flush();
+    }
+
+    GameState getState() {
+        return state;
     }
 
     void establish(ClientApplication app, BufferedReader serverInput, PrintWriter serverOutput) {
@@ -22,9 +33,13 @@ public class ClientManager {
         new Thread(new ClientListener(serverInput,this)).start();
     }
 
-    void sendLine(String line) {
-        System.out.println("Setting app " + line);
-        Platform.runLater(() -> app.setLabel(line));
+    void numPlayers(int num) {
+        if(id == -1) id = num-1;
+        Platform.runLater(() -> app.setNumPlayers(num));
+    }
+
+    void ready() {
+        send("r" + id);
     }
 
 }

@@ -23,7 +23,9 @@ public class RiskServer implements Runnable {
         try {
             while (!Thread.currentThread().isInterrupted()) {
                 Socket clientSocket = serverSocket.accept();
-                manager.addPlayer(clientSocket);
+                synchronized(manager) {
+                    manager.addPlayer(clientSocket);
+                }
             }
         } catch (IOException e) {
             System.err.println("Accept failed!");

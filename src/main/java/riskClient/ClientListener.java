@@ -1,5 +1,7 @@
 package riskClient;
 
+import riskShared.GameState;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 
@@ -26,11 +28,20 @@ class ClientListener implements Runnable {
     private void processLine(String line) {
         try {
             if(line.length() < 1) return;
-            synchronized(manager) {
-                manager.sendLine(line);
+
+            synchronized (manager) {
+                switch(manager.getState()) {
+                    case INITIALIZATION : {
+                        if(line.charAt(0) == 'c')
+                            manager.numPlayers(Integer.parseInt(line.substring(1,2)));
+                    } break;
+                    default : {
+
+                    }
+                }
             }
         } catch(Exception e) {
-            System.out.println("Error occured while reading server output");
+            System.out.println("Error occured while reading server output : " + line);
         }
 
     }

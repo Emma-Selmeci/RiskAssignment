@@ -3,6 +3,7 @@ module risk.risk {
     requires javafx.fxml;
 
 
-    opens risk.risk to javafx.fxml;
-    exports risk.risk;
+    opens risk to javafx.fxml;
+    exports risk;
+    exports riskClient;
 }
